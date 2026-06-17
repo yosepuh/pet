@@ -1,0 +1,801 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f6fa;--surface:#fff;--surface2:#f0f1f7;--border:#e2e4ef;
+  --text:#1a1d2e;--muted:#7c82a0;--accent:#6c63ff;--green:#16a34a;
+  --blue:#2563eb;--teal:#0d9488;--warn:#d97706;--red:#dc2626;
+  --accent-light:#ede9ff;--green-light:#dcfce7;--blue-light:#dbeafe;--warn-light:#fef3c7;
+  --pink:#9333ea;--pink-light:#f3e8ff;
+}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text)}
+.app{max-width:720px;margin:0 auto;padding:16px 16px 60px}
+
+/* Header */
+.app-header{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px}
+.header-left{flex:1}
+.app-logo{font-size:20px;font-weight:800;color:var(--accent);letter-spacing:-0.5px}
+.app-logo span{color:var(--text)}
+.header-date-lbl{font-size:12px;color:var(--muted);margin-top:2px}
+.header-right{display:flex;gap:10px;align-items:center}
+.streak-box{text-align:center;background:var(--warn-light);border:1px solid #fde68a;border-radius:10px;padding:8px 12px}
+.streak-num{font-size:20px;font-weight:800;color:var(--warn);line-height:1}
+.streak-lbl{font-size:10px;color:var(--warn);text-transform:uppercase;letter-spacing:1px}
+.countdown-box{text-align:center;background:var(--accent-light);border:1px solid #c4b5fd;border-radius:10px;padding:8px 12px}
+.countdown-num{font-size:20px;font-weight:800;color:var(--accent);line-height:1}
+.countdown-lbl{font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:1px}
+
+/* Weekend banner */
+.weekend-banner{background:linear-gradient(135deg,#f3e8ff,#ede9ff);border:1px solid #c4b5fd;border-radius:12px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.weekend-icon{font-size:22px}
+.weekend-text{font-size:13px;font-weight:600;color:var(--pink)}
+.weekend-sub{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* Tab Nav */
+.tab-nav{display:flex;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:14px;overflow-x:auto}
+.tab-btn{flex:1;min-width:72px;padding:8px 8px;border:none;border-radius:9px;font-size:11px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);transition:all .18s;white-space:nowrap}
+.tab-btn.active{background:var(--accent);color:#fff}
+
+/* Date Nav */
+.date-nav{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:11px 14px;margin-bottom:12px}
+.date-nav-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;color:var(--text);transition:all .15s;font-weight:500}
+.date-nav-btn:hover{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+.date-center{text-align:center}
+.date-big{font-size:14px;font-weight:700}
+.today-badge{display:inline-block;background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;margin-top:3px}
+.weekend-badge{display:inline-block;background:var(--pink-light);color:var(--pink);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;margin-top:3px}
+
+/* Total bar */
+.total-bar-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.total-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px}
+.total-lbl{font-size:13px;color:var(--muted)}
+.total-target-note{font-size:11px;color:var(--muted);margin-top:2px}
+.total-num{font-size:24px;font-weight:800;color:var(--accent)}
+.total-track{background:var(--surface2);border-radius:99px;height:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:8px}
+.total-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#6c63ff,#00d4aa);transition:width .8s ease}
+.total-sessions-mini{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.mini-pill{font-size:11px;padding:3px 9px;border-radius:99px;font-weight:500}
+
+/* Session cards */
+.session-list{display:flex;flex-direction:column;gap:10px}
+.sess{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:15px;transition:border-color .2s,background .2s}
+.sess.running{border-color:var(--accent);background:#fafaff}
+.sess.done{border-color:var(--green);background:#f0fdf4}
+.sess-top{display:flex;align-items:center;gap:10px;margin-bottom:13px}
+.sess-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.sess-info{flex:1}
+.sess-name{font-size:14px;font-weight:700}
+.sess-target{font-size:11px;color:var(--muted);margin-top:1px}
+.sess-badge{font-size:11px;padding:3px 10px;border-radius:99px;font-weight:600;flex-shrink:0}
+.b-idle{background:var(--surface2);color:var(--muted)}
+.b-run{background:var(--accent-light);color:var(--accent)}
+.b-done{background:var(--green-light);color:var(--green)}
+.sess-bottom{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+.timer-num{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;min-width:86px}
+.bar-track{background:var(--surface2);border-radius:99px;height:7px;overflow:hidden;border:1px solid var(--border);margin-bottom:5px}
+.bar-fill{height:100%;border-radius:99px;transition:width .6s ease}
+.bar-label{font-size:11px;color:var(--muted)}
+.btn-group{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.btn{padding:7px 13px;border-radius:8px;border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;background:var(--surface2);color:var(--text)}
+.btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover{background:#5a52d5;color:#fff;border-color:#5a52d5}
+.btn-success{background:var(--green-light);color:var(--green);border-color:#bbf7d0}
+.btn-danger{background:#fee2e2;color:var(--red);border-color:#fecaca}
+
+/* Weekly target */
+.week-target-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.wt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.wt-title{font-size:13px;font-weight:700}
+.wt-week{font-size:11px;color:var(--accent);background:var(--accent-light);padding:3px 10px;border-radius:99px;font-weight:600}
+.wt-rows{display:flex;flex-direction:column;gap:10px}
+.wt-row{}
+.wt-row-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.wt-name{color:var(--text);font-weight:500}
+.wt-val{color:var(--muted)}
+.wt-track{background:var(--surface2);border-radius:99px;height:6px;overflow:hidden;border:1px solid var(--border)}
+.wt-fill{height:100%;border-radius:99px;transition:width 1s ease}
+
+/* Checklist */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.card-title{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:13px;font-weight:600}
+.checks{display:flex;flex-direction:column;gap:8px}
+.chk{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .2s}
+.chk.ticked{background:var(--green-light);border-color:#bbf7d0}
+.chk-box{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;transition:all .2s}
+.chk.ticked .chk-box{background:var(--green);border-color:var(--green);color:#fff}
+.chk-lbl{font-size:13px;flex:1;font-weight:500}
+.chk-done-lbl{text-decoration:line-through;color:var(--muted)}
+
+/* Notes */
+.notes-area{width:100%;min-height:130px;border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;font-family:inherit;color:var(--text);background:var(--surface2);resize:vertical;line-height:1.6;outline:none;transition:border-color .2s}
+.notes-area:focus{border-color:var(--accent);background:#fff}
+.notes-hint{font-size:11px;color:var(--muted);margin-top:5px}
+
+/* Summary */
+.sum-table{width:100%;border-collapse:collapse;font-size:13px}
+.sum-table th{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600}
+.sum-table td{padding:10px;border-bottom:1px solid var(--border)}
+.sum-table tr:last-child td{border-bottom:none}
+.achieved{color:var(--green);font-weight:700}
+.partial{color:var(--warn);font-weight:700}
+.zero{color:var(--muted)}
+.export-section{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.export-btn{padding:9px 14px;border-radius:9px;border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer;background:var(--surface2);color:var(--text);transition:all .15s}
+.export-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+
+/* History */
+.history-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
+.history-day{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px}
+.hist-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.hist-date{font-size:13px;font-weight:700}
+.hist-total{font-size:13px;color:var(--accent);font-weight:700}
+.hist-sessions{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.hist-sess{text-align:center;background:var(--surface2);border-radius:8px;padding:8px 4px}
+.hist-sess-name{font-size:10px;color:var(--muted);margin-bottom:3px}
+.hist-sess-val{font-size:13px;font-weight:700}
+.hist-notes-preview{margin-top:10px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;font-style:italic;line-height:1.5}
+.hist-delete{background:none;border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:11px;padding:3px 8px;border-radius:6px}
+.hist-delete:hover{color:var(--red);background:#fee2e2;border-color:#fecaca}
+
+/* Save bar */
+.save-bar{position:sticky;bottom:0;background:rgba(245,246,250,.97);backdrop-filter:blur(8px);border-top:1px solid var(--border);padding:11px 16px;display:flex;align-items:center;gap:10px;margin:0 -16px -60px}
+.save-status{font-size:12px;color:var(--muted);flex:1}
+.save-status.saved{color:var(--green)}
+.save-status.unsaved{color:var(--warn)}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:20px;background:#1a1d2e;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:260px}
+.toast.show{opacity:1}
+
+@media(max-width:480px){
+  .header-right{gap:6px}
+  .hist-sessions{grid-template-columns:repeat(2,1fr)}
+  .total-sessions-mini{display:none}
+}
+</style>
+
+<div class="app">
+<h2 class="sr-only" style="position:absolute;left:-9999px">PET 500+ Daily Study Tracker — Timer, Checklist, Notes, History</h2>
+
+<!-- Header -->
+<div class="app-header">
+  <div class="header-left">
+    <div class="app-logo">PET <span>500+</span></div>
+    <div class="header-date-lbl" id="header-date-lbl"></div>
+  </div>
+  <div class="header-right">
+    <div class="streak-box">
+      <div class="streak-num" id="streak-num">0</div>
+      <div class="streak-lbl">🔥 Streak</div>
+    </div>
+    <div class="countdown-box">
+      <div class="countdown-num" id="cdown-num">—</div>
+      <div class="countdown-lbl">📅 Hari lagi</div>
+    </div>
+  </div>
+</div>
+
+<!-- Weekend banner (hidden by default) -->
+<div class="weekend-banner" id="weekend-banner" style="display:none">
+  <div class="weekend-icon">🎉</div>
+  <div>
+    <div class="weekend-text">Mode Weekend — Target 3 Jam!</div>
+    <div class="weekend-sub">Sabtu & Minggu: sesi lebih panjang, total 180 menit</div>
+  </div>
+</div>
+
+<!-- Tab Nav -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('timer',this)">⏱ Timer</button>
+  <button class="tab-btn" onclick="switchTab('checklist',this)">✅ Checklist</button>
+  <button class="tab-btn" onclick="switchTab('notes',this)">📝 Notes</button>
+  <button class="tab-btn" onclick="switchTab('summary',this)">📊 Ringkasan</button>
+  <button class="tab-btn" onclick="switchTab('history',this)">📅 History</button>
+</div>
+
+<!-- TIMER TAB -->
+<div id="tab-timer">
+  <div class="date-nav">
+    <button class="date-nav-btn" onclick="changeDay(-1)">← Kemarin</button>
+    <div class="date-center">
+      <div class="date-big" id="nav-date-timer"></div>
+      <div id="badge-timer"></div>
+    </div>
+    <button class="date-nav-btn" onclick="changeDay(1)">Besok →</button>
+  </div>
+
+  <div class="total-bar-wrap">
+    <div class="total-top">
+      <div>
+        <div class="total-lbl">Total belajar hari ini</div>
+        <div class="total-target-note" id="total-target-note"></div>
+      </div>
+      <div class="total-num" id="total-num">0 mnt</div>
+    </div>
+    <div class="total-track"><div class="total-fill" id="total-fill" style="width:0%"></div></div>
+    <div class="total-sessions-mini" id="mini-pills"></div>
+  </div>
+
+  <div class="week-target-card">
+    <div class="wt-header">
+      <div class="wt-title">Target Minggu Ini</div>
+      <div class="wt-week" id="wt-week-label"></div>
+    </div>
+    <div class="wt-rows" id="wt-rows"></div>
+  </div>
+
+  <div class="session-list" id="session-list"></div>
+</div>
+
+<!-- CHECKLIST TAB -->
+<div id="tab-checklist" style="display:none">
+  <div class="date-nav">
+    <button class="date-nav-btn" onclick="changeDay(-1)">← Kemarin</button>
+    <div class="date-center"><div class="date-big" id="nav-date-chk"></div><div id="badge-chk"></div></div>
+    <button class="date-nav-btn" onclick="changeDay(1)">Besok →</button>
+  </div>
+  <div class="card">
+    <div class="card-title">Daily Checklist</div>
+    <div class="checks" id="checks-list"></div>
+  </div>
+</div>
+
+<!-- NOTES TAB -->
+<div id="tab-notes" style="display:none">
+  <div class="date-nav">
+    <button class="date-nav-btn" onclick="changeDay(-1)">← Kemarin</button>
+    <div class="date-center"><div class="date-big" id="nav-date-notes"></div><div id="badge-notes"></div></div>
+    <button class="date-nav-btn" onclick="changeDay(1)">Besok →</button>
+  </div>
+  <div class="card">
+    <div class="card-title">Catatan Belajar Hari Ini</div>
+    <textarea class="notes-area" id="notes-area" placeholder="Tulis apa yang kamu pelajari hari ini...
+Contoh:
+- Belajar noun clause, masih bingung yang relative pronoun
+- Reading passage tentang environment
+- Listening part B agak susah, perlu latihan lebih"></textarea>
+    <div class="notes-hint">Tekan 💾 Simpan di bawah agar catatan tersimpan.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Kosakata Baru Hari Ini</div>
+    <textarea class="notes-area" id="vocab-area" style="min-height:100px" placeholder="1. deteriorate = memburuk
+2. magnitude = besarnya / skala
+3. persist = bertahan / terus berlanjut
+4. adequate = cukup / memadai
+5. deduce = menyimpulkan"></textarea>
+  </div>
+  <div class="card">
+    <div class="card-title">Kesalahan yang Perlu Diingat</div>
+    <textarea class="notes-area" id="mistakes-area" style="min-height:100px" placeholder="- Salah pilih antara 'which' dan 'that' di adjective clause
+- Lupa gerund setelah preposition
+- Soal no 12 reading: salah baca main idea"></textarea>
+  </div>
+</div>
+
+<!-- SUMMARY TAB -->
+<div id="tab-summary" style="display:none">
+  <div class="date-nav">
+    <button class="date-nav-btn" onclick="changeDay(-1)">← Kemarin</button>
+    <div class="date-center"><div class="date-big" id="nav-date-sum"></div><div id="badge-sum"></div></div>
+    <button class="date-nav-btn" onclick="changeDay(1)">Besok →</button>
+  </div>
+  <div class="card">
+    <div class="card-title">Waktu Per Sesi</div>
+    <table class="sum-table" id="sum-table"></table>
+  </div>
+  <div class="card">
+    <div class="card-title">Status Checklist</div>
+    <div id="sum-checks"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Export Data</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:4px">Simpan rekap belajar ke file atau clipboard.</div>
+    <div class="export-section">
+      <button class="export-btn" onclick="exportTxt()">⬇ Download .txt</button>
+      <button class="export-btn" onclick="copyExport()">📋 Salin ke Clipboard</button>
+      <button class="export-btn" onclick="exportAllTxt()">⬇ Semua History</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY TAB -->
+<div id="tab-history" style="display:none">
+  <div class="card">
+    <div class="card-title">Riwayat Belajar</div>
+    <div id="history-list"></div>
+  </div>
+</div>
+
+<!-- Save Bar -->
+<div class="save-bar">
+  <div class="save-status" id="save-status">Belum ada perubahan</div>
+  <button class="btn btn-primary" onclick="saveDay()">💾 Simpan</button>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ---- CONFIG ----
+const BASE_DATE = new Date(2026, 5, 17); // 17 June 2026 = index 0
+
+const WEEKDAY_SESSIONS = [
+  {id:'structure',name:'Structure',icon:'📐',color:'#6c63ff',bg:'#ede9ff',target:30},
+  {id:'reading',name:'Reading',icon:'📖',color:'#0d9488',bg:'#ccfbf1',target:45},
+  {id:'listening',name:'Listening',icon:'🎧',color:'#2563eb',bg:'#dbeafe',target:30},
+  {id:'review',name:'Review / Vocab',icon:'📝',color:'#d97706',bg:'#fef3c7',target:15},
+];
+const WEEKEND_SESSIONS = [
+  {id:'structure',name:'Structure',icon:'📐',color:'#6c63ff',bg:'#ede9ff',target:50},
+  {id:'reading',name:'Reading',icon:'📖',color:'#0d9488',bg:'#ccfbf1',target:70},
+  {id:'listening',name:'Listening',icon:'🎧',color:'#2563eb',bg:'#dbeafe',target:40},
+  {id:'review',name:'Review / Vocab',icon:'📝',color:'#d97706',bg:'#fef3c7',target:20},
+];
+const CHECKS=[
+  {id:'grammar',text:'15 soal grammar'},
+  {id:'reading3',text:'3 reading passages'},
+  {id:'listening20',text:'20–30 soal listening'},
+  {id:'vocab5',text:'5 kosakata baru'},
+  {id:'mistakes',text:'Catat semua kesalahan'},
+];
+const WEEK_TARGETS=[
+  {label:'Week 1 (17–23 Jun)',dateStart:new Date(2026,5,17),dateEnd:new Date(2026,5,23),targets:{Listening:'50+',Structure:'45+',Reading:'46+'}},
+  {label:'Week 2 (24–30 Jun)',dateStart:new Date(2026,5,24),dateEnd:new Date(2026,5,30),targets:{Listening:'52+',Structure:'48+',Reading:'48+'}},
+  {label:'Week 3 (1–7 Jul)',dateStart:new Date(2026,6,1),dateEnd:new Date(2026,6,7),targets:{Listening:'53+',Structure:'50+',Reading:'50+'}},
+  {label:'Final Sprint (8–10 Jul)',dateStart:new Date(2026,6,8),dateEnd:new Date(2026,6,10),targets:{Listening:'52–55',Structure:'50–55',Reading:'50–55'}},
+];
+const WEEK_TARGET_COLORS={Listening:'#2563eb',Structure:'#6c63ff',Reading:'#0d9488'};
+const WEEK_CURRENT_SCORES={Listening:49,Structure:41,Reading:44};
+const WEEK_MAX={Listening:55,Structure:55,Reading:55};
+
+const DAYS=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const MONTHS=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const MONTHS_SHORT=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+
+let currentOffset = 0;
+let timers = {};
+function initTimers(){
+  WEEKDAY_SESSIONS.forEach(s=>{timers[s.id]={elapsed:0,running:false,done:false,iv:null}});
+}
+initTimers();
+let store = {};
+
+function getDateObj(offset){
+  const d = new Date(BASE_DATE);
+  d.setDate(d.getDate() + offset);
+  return d;
+}
+function dateKey(offset){
+  const d=getDateObj(offset);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function dateLabel(offset){
+  const d=getDateObj(offset);
+  return DAYS[d.getDay()]+', '+d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear();
+}
+function dateShort(offset){
+  const d=getDateObj(offset);
+  return d.getDate()+' '+MONTHS_SHORT[d.getMonth()]+' '+d.getFullYear();
+}
+function isWeekend(offset){
+  const d=getDateObj(offset);
+  return d.getDay()===0||d.getDay()===6;
+}
+function isToday(offset){return offset===0}
+function getSessions(offset){return isWeekend(offset)?WEEKEND_SESSIONS:WEEKDAY_SESSIONS}
+function getTarget(offset){return isWeekend(offset)?180:120}
+
+function getWeekTarget(offset){
+  const d=getDateObj(offset);
+  for(let w of WEEK_TARGETS){
+    if(d>=w.dateStart&&d<=w.dateEnd) return w;
+  }
+  return null;
+}
+
+function storeKey(){return 'pet_day_'+dateKey(currentOffset)}
+
+function loadDay(){
+  getSessions(currentOffset).forEach(s=>{
+    const t=timers[s.id];
+    clearInterval(t.iv);t.elapsed=0;t.running=false;t.done=false;
+  });
+  try{
+    const raw=localStorage.getItem(storeKey());
+    store=raw?JSON.parse(raw):{sessions:{},checks:{},notes:'',vocab:'',mistakes:''};
+  }catch(e){store={sessions:{},checks:{},notes:'',vocab:'',mistakes:''};}
+  getSessions(currentOffset).forEach(s=>{
+    if(store.sessions&&store.sessions[s.id]!==undefined){
+      timers[s.id].elapsed=store.sessions[s.id].elapsed||0;
+      timers[s.id].done=store.sessions[s.id].done||false;
+    }
+  });
+  document.getElementById('save-status').textContent='Data dimuat — '+dateShort(currentOffset);
+  document.getElementById('save-status').className='save-status saved';
+  renderAll();
+}
+
+function saveDay(){
+  const sessions={};
+  getSessions(currentOffset).forEach(s=>{sessions[s.id]={elapsed:timers[s.id].elapsed,done:timers[s.id].done}});
+  const checks={};
+  CHECKS.forEach(c=>{
+    const el=document.querySelector('.chk[data-id="'+c.id+'"]');
+    checks[c.id]=el?el.classList.contains('ticked'):(store.checks&&store.checks[c.id]||false);
+  });
+  store={
+    sessions,checks,
+    notes:document.getElementById('notes-area')?.value||store.notes||'',
+    vocab:document.getElementById('vocab-area')?.value||store.vocab||'',
+    mistakes:document.getElementById('mistakes-area')?.value||store.mistakes||'',
+    savedAt:new Date().toISOString(),
+    isWeekend:isWeekend(currentOffset),
+    target:getTarget(currentOffset)
+  };
+  try{localStorage.setItem(storeKey(),JSON.stringify(store));}catch(e){}
+  document.getElementById('save-status').textContent='✓ Tersimpan — '+new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('save-status').className='save-status saved';
+  updateStreak();
+  showToast('Data berhasil disimpan! 🎉');
+  renderHistory();
+}
+
+function markUnsaved(){
+  document.getElementById('save-status').textContent='Ada perubahan belum disimpan';
+  document.getElementById('save-status').className='save-status unsaved';
+}
+
+function changeDay(d){
+  getSessions(currentOffset).forEach(s=>{clearInterval(timers[s.id].iv);timers[s.id].running=false;});
+  currentOffset+=d;
+  loadDay();
+  updateDateLabels();
+  updateWeekendBanner();
+  document.getElementById('notes-area').value=store.notes||'';
+  document.getElementById('vocab-area').value=store.vocab||'';
+  document.getElementById('mistakes-area').value=store.mistakes||'';
+}
+
+function updateDateLabels(){
+  const lbl=dateLabel(currentOffset);
+  const badge=isToday(currentOffset)?
+    '<div class="today-badge">Hari Ini</div>':
+    (isWeekend(currentOffset)?'<div class="weekend-badge">🎉 Weekend</div>':'');
+  ['timer','chk','notes','sum'].forEach(sfx=>{
+    const el=document.getElementById('nav-date-'+sfx);
+    if(el)el.textContent=lbl;
+    const be=document.getElementById('badge-'+sfx);
+    if(be)be.innerHTML=badge;
+  });
+  const now=getDateObj(currentOffset);
+  document.getElementById('header-date-lbl').textContent=DAYS[now.getDay()]+', '+now.getDate()+' '+MONTHS[now.getMonth()]+' '+now.getFullYear()+(isToday(currentOffset)?'':' · Offset '+currentOffset);
+}
+
+function updateWeekendBanner(){
+  document.getElementById('weekend-banner').style.display=isWeekend(currentOffset)?'flex':'none';
+}
+
+function updateStreak(){
+  let streak=0;
+  let off=0;
+  while(true){
+    try{
+      const raw=localStorage.getItem('pet_day_'+dateKey(off));
+      if(!raw)break;
+      const d=JSON.parse(raw);
+      let total=0;
+      getSessions(off).forEach(s=>{if(d.sessions&&d.sessions[s.id])total+=Math.floor(d.sessions[s.id].elapsed/60);});
+      if(total>0){streak++;off--;}else break;
+    }catch(e){break;}
+  }
+  document.getElementById('streak-num').textContent=streak;
+}
+
+function updateCountdown(){
+  const target=new Date(2026,6,10);
+  const now=new Date(2026,5,17);
+  const diff=Math.ceil((target-now)/(1000*60*60*24));
+  document.getElementById('cdown-num').textContent=Math.max(0,diff);
+}
+
+function switchTab(tab,btn){
+  ['timer','checklist','notes','summary','history'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display='none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).style.display='block';
+  btn.classList.add('active');
+  if(tab==='history') renderHistory();
+  if(tab==='summary') renderSummary();
+  if(tab==='notes'){
+    document.getElementById('notes-area').value=store.notes||'';
+    document.getElementById('vocab-area').value=store.vocab||'';
+    document.getElementById('mistakes-area').value=store.mistakes||'';
+  }
+}
+
+function fmt(sec){return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')}
+
+function renderTimer(){
+  const sessions=getSessions(currentOffset);
+  const targetMin=getTarget(currentOffset);
+  const cont=document.getElementById('session-list');
+  cont.innerHTML='';
+  let total=0;
+  sessions.forEach(s=>{
+    const t=timers[s.id];
+    const pct=Math.min(100,Math.round(t.elapsed/(s.target*60)*100));
+    const elMin=Math.floor(t.elapsed/60);
+    total+=elMin;
+    let badge,badgeClass;
+    if(t.done){badge='✓ Selesai';badgeClass='b-done';}
+    else if(t.running){badge='▶ Jalan...';badgeClass='b-run';}
+    else{badge=s.target+' menit';badgeClass='b-idle';}
+    let btns='';
+    if(t.done){
+      btns=`<button class="btn btn-danger" onclick="resetSess('${s.id}')">↺ Reset</button>`;
+    }else if(t.running){
+      btns=`<button class="btn" onclick="pauseSess('${s.id}')">⏸ Pause</button>
+            <button class="btn btn-success" onclick="doneSess('${s.id}')">✓ Selesai</button>
+            <button class="btn" onclick="resetSess('${s.id}')">↺</button>`;
+    }else{
+      btns=`<button class="btn btn-primary" onclick="startSess('${s.id}')">▶ Mulai</button>
+            <button class="btn btn-success" onclick="doneSess('${s.id}')">✓ Done</button>
+            <button class="btn" onclick="resetSess('${s.id}')">↺ Reset</button>`;
+    }
+    const div=document.createElement('div');
+    div.className='sess'+(t.running?' running':t.done?' done':'');
+    div.id='sess-'+s.id;
+    div.innerHTML=`
+      <div class="sess-top">
+        <div class="sess-icon" style="background:${s.bg}">${s.icon}</div>
+        <div class="sess-info">
+          <div class="sess-name">${s.name}</div>
+          <div class="sess-target">Target: ${s.target} menit ${isWeekend(currentOffset)?'<span style="color:var(--pink);font-size:10px">Weekend+</span>':''}</div>
+        </div>
+        <span class="sess-badge ${badgeClass}">${badge}</span>
+      </div>
+      <div class="sess-bottom">
+        <div class="timer-num" style="color:${t.done?'#16a34a':s.color}">${fmt(t.elapsed)}</div>
+        <div>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${s.color}"></div></div>
+          <div class="bar-label">${pct}% dari ${s.target} mnt${pct>=100?' · 🎉 tercapai!':''}</div>
+        </div>
+      </div>
+      <div class="btn-group">${btns}</div>`;
+    cont.appendChild(div);
+  });
+
+  const pct=Math.min(100,Math.round(total/targetMin*100));
+  document.getElementById('total-num').textContent=total+' mnt';
+  document.getElementById('total-target-note').textContent='Target '+targetMin+' mnt ('+( isWeekend(currentOffset)?'Weekend 3 jam':'Weekday 2 jam')+') — '+pct+'% tercapai';
+  document.getElementById('total-fill').style.width=pct+'%';
+
+  // mini pills
+  const mp=document.getElementById('mini-pills');
+  mp.innerHTML='';
+  sessions.forEach(s=>{
+    const min=Math.floor(timers[s.id].elapsed/60);
+    const done=timers[s.id].done;
+    const pill=document.createElement('div');
+    pill.className='mini-pill';
+    pill.style.background=done?'#dcfce7':min>0?s.bg:'var(--surface2)';
+    pill.style.color=done?'#16a34a':min>0?s.color:'var(--muted)';
+    pill.style.border='1px solid '+(done?'#bbf7d0':min>0?s.color+'44':'var(--border)');
+    pill.textContent=s.icon+' '+s.name+': '+min+'/'+s.target+' mnt';
+    mp.appendChild(pill);
+  });
+
+  // weekly target
+  const wt=getWeekTarget(currentOffset);
+  const wtLabel=document.getElementById('wt-week-label');
+  const wtRows=document.getElementById('wt-rows');
+  if(wt){
+    wtLabel.textContent=wt.label;
+    wtRows.innerHTML='';
+    Object.entries(wt.targets).forEach(([sec,tgt])=>{
+      const current=WEEK_CURRENT_SCORES[sec]||0;
+      const max=WEEK_MAX[sec]||55;
+      const pct=Math.round(current/max*100);
+      const color=WEEK_TARGET_COLORS[sec]||'#6c63ff';
+      const row=document.createElement('div');
+      row.className='wt-row';
+      row.innerHTML=`<div class="wt-row-top"><span class="wt-name">${sec}</span><span class="wt-val">Skor kini: ${current} · Target: ${tgt}</span></div>
+        <div class="wt-track"><div class="wt-fill" style="width:${pct}%;background:${color}"></div></div>`;
+      wtRows.appendChild(row);
+    });
+  }else{
+    wtLabel.textContent='Di luar jadwal';
+    wtRows.innerHTML='<div style="font-size:13px;color:var(--muted)">Tidak ada target minggu aktif untuk tanggal ini.</div>';
+  }
+}
+
+function renderChecklist(){
+  const cont=document.getElementById('checks-list');
+  if(!cont)return;
+  cont.innerHTML='';
+  CHECKS.forEach(c=>{
+    const ticked=store.checks&&store.checks[c.id];
+    const div=document.createElement('div');
+    div.className='chk'+(ticked?' ticked':'');
+    div.dataset.id=c.id;
+    div.onclick=function(){
+      this.classList.toggle('ticked');
+      if(!store.checks)store.checks={};
+      store.checks[c.id]=this.classList.contains('ticked');
+      const lbl=this.querySelector('.chk-lbl');
+      lbl.className='chk-lbl'+(this.classList.contains('ticked')?' chk-done-lbl':'');
+      const box=this.querySelector('.chk-box');
+      box.textContent=this.classList.contains('ticked')?'✓':'';
+      markUnsaved();
+    };
+    div.innerHTML=`<div class="chk-box">${ticked?'✓':''}</div><div class="chk-lbl${ticked?' chk-done-lbl':''}">${c.text}</div>`;
+    cont.appendChild(div);
+  });
+}
+
+function renderSummary(){
+  const sessions=getSessions(currentOffset);
+  const targetMin=getTarget(currentOffset);
+  const tbody=document.getElementById('sum-table');
+  if(!tbody)return;
+  let rows='<thead><tr><th>Sesi</th><th>Target</th><th>Dicapai</th><th>Status</th></tr></thead><tbody>';
+  let total=0;
+  sessions.forEach(s=>{
+    const t=timers[s.id];
+    const min=Math.floor(t.elapsed/60);
+    total+=min;
+    const pct=Math.round(min/s.target*100);
+    let cls='zero',status='Belum mulai';
+    if(pct>=100){cls='achieved';status='✓ Tercapai';}
+    else if(pct>0){cls='partial';status=pct+'%';}
+    rows+=`<tr><td>${s.icon} ${s.name}</td><td>${s.target} mnt</td><td class="${cls}">${min} mnt</td><td class="${cls}">${status}</td></tr>`;
+  });
+  rows+=`<tr style="border-top:2px solid var(--border);font-weight:700"><td colspan="2">Total</td><td class="${total>=targetMin?'achieved':'partial'}">${total} mnt</td><td class="${total>=targetMin?'achieved':'partial'}">${total>=targetMin?'✓ Selesai':Math.round(total/targetMin*100)+'%'}</td></tr>`;
+  tbody.innerHTML=rows+'</tbody>';
+
+  const sc=document.getElementById('sum-checks');
+  if(sc){
+    let html='';let done=0;
+    CHECKS.forEach(c=>{
+      const ok=store.checks&&store.checks[c.id];
+      if(ok)done++;
+      html+=`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+        <span style="color:${ok?'var(--green)':'var(--muted)'};font-weight:700">${ok?'✓':'○'}</span>
+        <span style="color:${ok?'var(--text)':'var(--muted)'}">${c.text}</span>
+      </div>`;
+    });
+    sc.innerHTML=html+`<div style="padding-top:10px;font-size:12px;color:var(--muted)">${done} dari ${CHECKS.length} tugas selesai</div>`;
+  }
+}
+
+function renderHistory(){
+  const cont=document.getElementById('history-list');
+  if(!cont)return;
+  let keys=[];
+  try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('pet_day_'))keys.push(k);}}catch(e){}
+  keys.sort().reverse();
+  if(keys.length===0){cont.innerHTML='<div class="history-empty">Belum ada data tersimpan.<br><br>Mulai belajar dan tekan 💾 Simpan!</div>';return;}
+  cont.innerHTML='';
+  keys.forEach(k=>{
+    try{
+      const d=JSON.parse(localStorage.getItem(k));
+      const dateStr=k.replace('pet_day_','');
+      const dateObj=new Date(dateStr);
+      const isWE=d.isWeekend||(dateObj.getDay()===0||dateObj.getDay()===6);
+      const tgt=d.target||(isWE?180:120);
+      let total=0;
+      let sessHtml='';
+      const sessions=isWE?WEEKEND_SESSIONS:WEEKDAY_SESSIONS;
+      sessions.forEach(s=>{
+        const min=d.sessions&&d.sessions[s.id]?Math.floor(d.sessions[s.id].elapsed/60):0;
+        total+=min;
+        const done=d.sessions&&d.sessions[s.id]&&d.sessions[s.id].done;
+        sessHtml+=`<div class="hist-sess">
+          <div class="hist-sess-name">${s.icon} ${s.name}</div>
+          <div class="hist-sess-val" style="color:${done?'var(--green)':min>0?s.color:'var(--muted)'}">${min} mnt</div>
+        </div>`;
+      });
+      const lbl=DAYS[dateObj.getDay()]+', '+dateObj.getDate()+' '+MONTHS[dateObj.getMonth()]+' '+dateObj.getFullYear();
+      const pct=Math.round(total/tgt*100);
+      let notesHtml='';
+      if(d.notes&&d.notes.trim())notesHtml+=`<div class="hist-notes-preview">"${d.notes.trim().substring(0,150)}${d.notes.length>150?'...':''}"</div>`;
+      const div=document.createElement('div');
+      div.className='history-day';
+      div.innerHTML=`<div class="hist-header">
+        <span class="hist-date">${lbl}${isWE?' 🎉':''}</span>
+        <span style="display:flex;align-items:center;gap:8px">
+          <span class="hist-total">${total}/${tgt} mnt (${pct}%)</span>
+          <button class="hist-delete" onclick="deleteDay('${k}')">🗑 Hapus</button>
+        </span>
+      </div>
+      <div class="hist-sessions">${sessHtml}</div>${notesHtml}`;
+      cont.appendChild(div);
+    }catch(e){}
+  });
+}
+
+function deleteDay(key){
+  if(!confirm('Hapus data hari ini?'))return;
+  try{localStorage.removeItem(key);}catch(e){}
+  renderHistory();
+}
+
+function startSess(id){const t=timers[id];if(t.running||t.done)return;t.running=true;t.iv=setInterval(()=>{t.elapsed++;renderTimer();markUnsaved();},1000);renderTimer();}
+function pauseSess(id){const t=timers[id];clearInterval(t.iv);t.running=false;renderTimer();markUnsaved();}
+function doneSess(id){const t=timers[id];clearInterval(t.iv);t.running=false;t.done=true;if(t.elapsed===0)t.elapsed=getSessions(currentOffset).find(s=>s.id===id).target*60;renderTimer();markUnsaved();}
+function resetSess(id){const t=timers[id];clearInterval(t.iv);t.running=false;t.done=false;t.elapsed=0;renderTimer();markUnsaved();}
+
+function buildExportText(){
+  let txt='=== REKAP BELAJAR PET 500+ ===\n';
+  txt+=dateLabel(currentOffset)+'\n';
+  txt+=(isWeekend(currentOffset)?'Mode: Weekend (Target 3 jam / 180 menit)':'Mode: Weekday (Target 2 jam / 120 menit)')+'\n\n';
+  txt+='--- WAKTU BELAJAR ---\n';
+  let total=0;
+  getSessions(currentOffset).forEach(s=>{
+    const min=Math.floor(timers[s.id].elapsed/60);total+=min;
+    txt+=s.name+': '+min+'/'+s.target+' menit'+(timers[s.id].done?' ✓':'')+'\n';
+  });
+  txt+='Total: '+total+'/'+getTarget(currentOffset)+' menit\n\n';
+  txt+='--- CHECKLIST ---\n';
+  CHECKS.forEach(c=>{txt+=(store.checks&&store.checks[c.id]?'[✓]':'[ ]')+' '+c.text+'\n';});
+  if(store.notes&&store.notes.trim()){txt+='\n--- CATATAN ---\n'+store.notes.trim()+'\n';}
+  if(store.vocab&&store.vocab.trim()){txt+='\n--- KOSAKATA ---\n'+store.vocab.trim()+'\n';}
+  if(store.mistakes&&store.mistakes.trim()){txt+='\n--- KESALAHAN ---\n'+store.mistakes.trim()+'\n';}
+  return txt;
+}
+
+function exportTxt(){
+  const blob=new Blob([buildExportText()],{type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='belajar_pet_'+dateKey(currentOffset)+'.txt';a.click();
+  showToast('File berhasil didownload!');
+}
+function copyExport(){
+  const txt=buildExportText();
+  navigator.clipboard.writeText(txt).then(()=>showToast('Disalin ke clipboard!')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('Disalin!');
+  });
+}
+function exportAllTxt(){
+  let all='=== SEMUA HISTORY BELAJAR PET 500+ ===\n\n';
+  let keys=[];
+  try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('pet_day_'))keys.push(k);}}catch(e){}
+  keys.sort().forEach(k=>{
+    try{
+      const d=JSON.parse(localStorage.getItem(k));
+      const dateObj=new Date(k.replace('pet_day_',''));
+      const isWE=d.isWeekend||(dateObj.getDay()===0||dateObj.getDay()===6);
+      const tgt=d.target||(isWE?180:120);
+      all+='=== '+DAYS[dateObj.getDay()]+', '+dateObj.getDate()+' '+MONTHS[dateObj.getMonth()]+' '+dateObj.getFullYear()+(isWE?' [Weekend]':'')+' ===\n';
+      let total=0;
+      const sessions=isWE?WEEKEND_SESSIONS:WEEKDAY_SESSIONS;
+      sessions.forEach(s=>{const min=d.sessions&&d.sessions[s.id]?Math.floor(d.sessions[s.id].elapsed/60):0;total+=min;all+=s.name+': '+min+' mnt\n';});
+      all+='Total: '+total+'/'+tgt+' mnt\n';
+      if(d.notes&&d.notes.trim())all+='Catatan: '+d.notes.trim().substring(0,200)+'\n';
+      all+='\n';
+    }catch(e){}
+  });
+  const blob=new Blob([all],{type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='pet500_semua_history.txt';a.click();
+  showToast('Semua history didownload!');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function renderAll(){renderTimer();renderChecklist();renderSummary();}
+
+document.querySelectorAll('.notes-area').forEach(ta=>{ta.addEventListener('input',markUnsaved);});
+
+// INIT
+updateCountdown();
+updateStreak();
+updateDateLabels();
+updateWeekendBanner();
+loadDay();
+</script>
